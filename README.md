@@ -23,21 +23,21 @@
 
         /* Кастомный скроллбар */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
         ::-webkit-scrollbar-track {
             background: #0b0f19;
         }
         ::-webkit-scrollbar-thumb {
             background: #334155;
-            border-radius: 3px;
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #38bdf8;
         }
 
-        /* Верхняя панель (Header с размытием) */
+        /* Верхняя панель (Header) */
         .top-bar {
             height: 65px;
             background: rgba(30, 41, 59, 0.75);
@@ -48,6 +48,7 @@
             align-items: center;
             padding: 0 25px;
             z-index: 100;
+            flex-shrink: 0;
         }
 
         .brand {
@@ -75,15 +76,14 @@
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
             animation: pulseGlow 3s infinite alternate;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
-        /* Неоновый блик за иконкой */
         @keyframes pulseGlow {
             0% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.4), 0 0 30px rgba(99, 102, 241, 0.2); }
             100% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.8), 0 0 45px rgba(168, 85, 247, 0.5); }
         }
 
-        /* Бегущий свет по грани */
         .brand-icon::before {
             content: '';
             position: absolute;
@@ -112,7 +112,6 @@
             filter: drop-shadow(0 0 6px #ffffff);
         }
 
-        /* Анимация прохождения тока по молнии */
         .brand-icon svg path {
             stroke-dasharray: 60;
             stroke-dashoffset: 60;
@@ -140,7 +139,6 @@
             }
         }
 
-        /* Переключатель видов */
         .view-toggle {
             display: flex;
             background-color: #0f172a;
@@ -185,6 +183,7 @@
             padding: 20px;
             gap: 12px;
             overflow-y: auto;
+            flex-shrink: 0;
         }
 
         .sidebar-right {
@@ -206,7 +205,6 @@
             margin-top: 0;
         }
 
-        /* Кнопки элементов */
         .btn-element {
             padding: 10px 14px;
             background: #1e293b;
@@ -246,15 +244,16 @@
             transform: none;
         }
 
-        /* Рабочая область */
+        /* РАБОЧАЯ ОБЛАСТЬ (ИСПРАВЛЕНА ПРОКРУТКА) */
         .workspace {
             flex: 1;
             padding: 25px;
-            overflow-y: auto;
+            overflow-y: scroll; /* Принудительно включаем скролл вниз */
             display: flex;
             flex-direction: column;
             align-items: center;
             background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%);
+            height: 100%;
         }
 
         .canvas {
@@ -267,6 +266,7 @@
             padding: 25px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.2);
             transition: all 0.2s;
+            margin-bottom: 50px; /* Отступ снизу для комфортного скролла */
         }
 
         /* Текстовый редактор кода */
@@ -406,7 +406,6 @@
     <!-- Шапка сайта -->
     <div class="top-bar">
         <div class="brand">
-            <!-- ИКОНКА С АНИМАЦИЕЙ МОЛНИИ -->
             <div class="brand-icon">
                 <svg viewBox="0 0 24 24">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
@@ -424,7 +423,7 @@
     <!-- Основное рабочее пространство -->
     <div class="main-container">
         
-        <!-- Левая панель: Добавление элементов -->
+        <!-- Левая панель -->
         <div class="sidebar">
             <h2>Базовые блоки</h2>
             <button class="btn-element" onclick="addElement('navbar')">Шапка (Nav) <span>+</span></button>
@@ -463,16 +462,14 @@
             <button class="btn-element btn-danger" onclick="clearCanvas()">Очистить холст 🗑</button>
         </div>
 
-        <!-- Центральная панель -->
+        <!-- Центральная панель с рабочей областью -->
         <div class="workspace">
-            <!-- Холст конструктора -->
             <div class="canvas" id="canvas">
                 <p id="empty-msg" style="color: #64748b; text-align: center; margin-top: 220px;">
                     Выберите блоки на левой панели для добавления
                 </p>
             </div>
 
-            <!-- Редактор кода -->
             <div class="code-editor-container" id="code-container">
                 <label style="color: #94a3b8; font-size: 13px;">Прямое редактирование HTML-кода:</label>
                 <textarea class="code-editor" id="code-editor" oninput="applyCodeChanges()"></textarea>
@@ -500,7 +497,6 @@
         let elementCount = 0;
         let currentMode = 'visual';
 
-        // Переключение режимов (Визуальный / Код)
         function switchView(mode) {
             currentMode = mode;
             document.getElementById('btn-view-visual').classList.toggle('active', mode === 'visual');
@@ -516,7 +512,6 @@
             }
         }
 
-        // Изменение общего стиля холста
         function changeCanvasBg(color) { canvas.style.backgroundColor = color; }
         function changeCanvasPadding(val) { canvas.style.padding = val + 'px'; }
         function changeCanvasFont(font) { canvas.style.fontFamily = font; }
@@ -532,7 +527,6 @@
             }
         }
 
-        // Добавление элементов на холст
         function addElement(type) {
             if (emptyMsg) emptyMsg.style.display = 'none';
 
@@ -653,7 +647,6 @@
 
             wrapper.appendChild(el);
 
-            // Кнопка удаления
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-btn';
             deleteBtn.innerText = '✕';
@@ -680,7 +673,6 @@
             }
         }
 
-        // Показ свойств элемента
         function selectElement(wrapper, targetEl, type) {
             document.querySelectorAll('.canvas-item').forEach(item => item.classList.remove('selected'));
             wrapper.classList.add('selected');
@@ -747,7 +739,6 @@
 
             editorControls.innerHTML = html || '<p style="color: #64748b; font-size: 13px;">Для этого элемента нет быстрой настройки</p>';
 
-            // Слушатели событий
             const propText = document.getElementById('prop-text');
             if (propText) propText.oninput = (e) => targetEl.innerText = e.target.value;
 
@@ -767,7 +758,6 @@
             if (propAlign) propAlign.onchange = (e) => targetEl.style.textAlign = e.target.value;
         }
 
-        // Синхронизация кода
         function updateCodeEditorFromCanvas() {
             const cloneCanvas = canvas.cloneNode(true);
             cloneCanvas.querySelectorAll('.delete-btn').forEach(btn => btn.remove());
@@ -781,7 +771,6 @@
             codeEditor.value = cleanHTML.trim();
         }
 
-        // Применение изменений из редактора кода к холсту
         function applyCodeChanges() {
             const newHTML = codeEditor.value;
             canvas.innerHTML = '';
@@ -829,7 +818,7 @@
             return "#" + ((1 << 24) + (parseInt(res[0]) << 16) + (parseInt(res[1]) << 8) + parseInt(res[2])).toString(16).slice(1);
         }
 
-        // Скачивание готовой страницы
+        // ЭКСПОРТ (ИСПРАВЛЕН СКРОЛЛ ДЛЯ ИТОГОВОЙ СТРАНИЦЫ)
         function exportHTML() {
             if (currentMode === 'code') {
                 applyCodeChanges();
@@ -855,13 +844,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сайт созданный в Programmiist Studio</title>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: ${fontFamily}; 
             padding: ${padding}; 
             max-width: 850px; 
             margin: 0 auto; 
             background-color: ${bgColor};
+            min-height: 100vh;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -873,7 +864,7 @@ ${cleanContent}
             const blob = new Blob([fullPageCode], { type: 'text/html' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'programmiist_page.html';
+            a.download = 'index.html';
             a.click();
         }
     </script>
